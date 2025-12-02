@@ -45,9 +45,9 @@
         >
             <!-- 
                 Camera setup 
-                mindar-image-system handles the AR camera feed
+                Standard A-Frame camera with look-controls disabled for AR
             -->
-            <a-entity mindar-image-system="autoStart: true"></a-entity>
+            <a-camera position="0 0 0" look-controls="enabled: false"></a-camera>
 
             <!-- Asset Management: Define the image (image2) you want to overlay -->
             <a-assets>
@@ -71,11 +71,9 @@
                 <a-image 
                     src="#overlayImage" 
                     rotation="0 0 0" 
-                    position="0 0 0.1" 
+                    position="0 0 0" 
                     width="1" 
                     height="1"
-                    look-at="[camera]" 
-                    scale="1 1 1"
                 ></a-image>
             </a-entity>
         </a-scene>
