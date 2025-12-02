@@ -7,6 +7,46 @@
     
     <script src="https://cdn.jsdelivr.net/npm/mind-ar@1.2.5/dist/mindar-image-aframe.prod.js"></script>
 
+    <script>
+        // Hack to force high resolution to try to pick the main camera on mobile
+        // instead of the wide-angle camera which is often default for "environment"
+        const origGetUserMedia = navigator.mediaDevices.getUserMedia.bind(navigator.mediaDevices);
+        navigator.mediaDevices.getUserMedia = function(constraints) {
+            if (constraints.video && constraints.video.facingMode === 'environment') {
+                // Adding width/height constraints often forces the main camera
+                constraints.video.width = { ideal: 1280 };
+                constraints.video.height = { ideal: 720 };
+            }
+            return origGetUserMedia(constraints);
+        };
+
+        // Component to set the aspect ratio of the image to match its natural dimensions
+        AFRAME.registerComponent('fix-aspect-ratio', {
+            init: function () {
+                const el = this.el;
+                const src = el.getAttribute('src');
+                // Handle both selector and direct url
+                const img = document.querySelector(src);
+                
+                if (img) {
+                    if (img.complete) {
+                        this.setRatio(img);
+                    } else {
+                        img.onload = () => {
+                            this.setRatio(img);
+                        };
+                    }
+                }
+            },
+            setRatio: function (img) {
+                if (img.naturalWidth === 0) return;
+                const ratio = img.naturalHeight / img.naturalWidth;
+                this.el.setAttribute('height', ratio);
+                this.el.setAttribute('width', '1');
+            }
+        });
+    </script>
+
     <style>
         /* This removes the default scrollbars and ensures the scene is full-screen */
         body { margin: 0; }
@@ -30,7 +70,8 @@
                      rotation="0 0 0" 
                      position="0 0 0" 
                      width="1" 
-                     height="1">
+                     height="1"
+                     fix-aspect-ratio>
             </a-image>
         </a-entity>
     </a-scene>
