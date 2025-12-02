@@ -14,8 +14,9 @@
         navigator.mediaDevices.getUserMedia = function(constraints) {
             if (constraints.video && constraints.video.facingMode === 'environment') {
                 // Adding width/height constraints often forces the main camera
-                constraints.video.width = { ideal: 1280 };
-                constraints.video.height = { ideal: 720 };
+                constraints.video.width = { min: 1280, ideal: 1920, max: 2560 };
+                constraints.video.height = { min: 720, ideal: 1080, max: 1440 };
+                constraints.video.frameRate = { ideal: 60 };
             }
             return origGetUserMedia(constraints);
         };
