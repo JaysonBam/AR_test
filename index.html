@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MindAR Image Overlay</title>
+    <!-- Load Tailwind CSS for basic styling and mobile-first responsiveness -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Load A-Frame framework -->
+    <script src="https://aframe.io/releases/1.5.0/aframe.min.js"></script>
+    
+    <!-- Load MindAR A-Frame extension for image tracking -->
+    <!-- We use the image version here since we are tracking images -->
+    <script src="https://cdn.jsdelivr.net/npm/mind-ar@1.2.5/dist/mindar-image-aframe.prod.js"></script>
+
+    <style>
+        /* Ensure the A-Frame scene takes up the full viewport */
+        .ar-scene-container {
+            width: 100vw;
+            height: 100vh;
+            overflow: hidden;
+            position: relative;
+        }
+        /* Custom styles to prevent mobile issues with 100vh */
+        body {
+            margin: 0;
+            padding: 0;
+        }
+    </style>
+</head>
+<body class="bg-gray-900 text-white font-sans">
+
+    <div class="ar-scene-container">
+        <!-- 
+            A-Frame Scene Setup 
+            The mindar-image component handles the AR engine initialization.
+            The source points to your compiled .mind file, which contains your target image (image1).
+        -->
+        <a-scene 
+            mindar-image="imageTargetSrc: ./targets.mind; filterMinCF:0.0001; filterBeta: 0.0001;" 
+            vr-mode-ui="enabled: false" 
+            device-orientation-permission-ui="enabled: false" 
+            renderer="colorManagement: true, physicallyCorrectLights: true"
+        >
+            <!-- 
+                Camera setup 
+                mindar-image-system handles the AR camera feed
+            -->
+            <a-entity mindar-image-system="autoStart: true"></a-entity>
+
+            <!-- Asset Management: Define the image (image2) you want to overlay -->
+            <a-assets>
+                <!-- 
+                    Overlay image asset (image2)
+                -->
+                <img id="overlayImage" src="./display.webp" crossorigin="anonymous" />
+            </a-assets>
+
+            <!-- 
+                Image Target Entity 
+                mindar-image-target="targetIndex: 0" links this entity to the first target 
+                in your targets.mind file (which corresponds to image1).
+            -->
+            <a-entity mindar-image-target="targetIndex: 0">
+                <!-- 
+                    The a-image entity is the content displayed on the tracked image.
+                    It uses the asset defined above and is positioned in the center (0, 0, 0)
+                    of the target coordinate system.
+                -->
+                <a-image 
+                    src="#overlayImage" 
+                    rotation="0 0 0" 
+                    position="0 0 0.1" 
+                    width="1" 
+                    height="1"
+                    look-at="[camera]" 
+                    scale="1 1 1"
+                ></a-image>
+            </a-entity>
+        </a-scene>
+    </div>
+
+    <div class="absolute top-0 left-0 p-4 w-full text-center bg-black/50 z-10">
+        <p class="text-lg font-bold">MindAR Image Tracking</p>
+        <p class="text-sm">Point your camera at the target image (image1).</p>
+    </div>
+
+</body>
+</html>
